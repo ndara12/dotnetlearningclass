@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using dotnetlearningclass.Entities;
 using System;
+using System.Collections.Generic; // Import this namespace for IEnumerable
 using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Annotations;// Import this namespace for Swagger annotations
 
 namespace dotnetlearningclass.Controllers
 {
@@ -18,6 +20,7 @@ namespace dotnetlearningclass.Controllers
         }
 
         [HttpPost]
+        [SwaggerOperation(Summary = "Create a new student", Description = "Creates a new student and adds it to the database.")]
         public async Task<IActionResult> CreateStudent(Students student)
         {
             try
@@ -42,9 +45,16 @@ namespace dotnetlearningclass.Controllers
             }
         }
 
-        // Implement other CRUD operations (GET, PUT, DELETE) as needed.
+        [HttpGet]
+        [SwaggerOperation(Summary = "Get all students", Description = "Retrieves a list of all students.")]
+        public async Task<ActionResult<IEnumerable<Students>>> GetAllStudents()
+        {
+            var students = await _context.Students.ToListAsync();
+            return Ok(students);
+        }
 
         [HttpGet("{id}")]
+        [SwaggerOperation(Summary = "Get a student by ID", Description = "Retrieves a student by their ID.")]
         public async Task<ActionResult<Students>> GetStudent(int id)
         {
             var student = await _context.Students.FindAsync(id);
@@ -56,5 +66,65 @@ namespace dotnetlearningclass.Controllers
 
             return student;
         }
+        [HttpPut("{id}")]
+        [SwaggerOperation(Summary = "Update a student by ID", Description = "Updates a student's information by their ID.")]
+        public async Task<IActionResult> UpdateStudent(int id, Students student)
+        {
+            // Check if the incoming student data is valid
+            if (student == null || id != student.StudentId)
+            {
+                return BadRequest("Invalid student data");
+            }
+
+            // Check if the student with the given ID exists
+            var existingStudent = await _context.Students.FindAsync(id);
+            if (existingStudent == null)
+            {
+                return NotFound("Student not found");
+            }
+
+            // Update the student's information
+            existingStudent.StudentName = student.StudentName;
+            existingStudent.StudentClassId = student.StudentClassId;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent(); // Return a 204 No Content response
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions, such as database errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [SwaggerOperation(Summary = "Delete a student by ID", Description = "Deletes a student by their ID.")]
+        public async Task<IActionResult> DeleteStudent(int id)
+        {
+            // Check if the student with the given ID exists
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
+            {
+                return NotFound("Student not found");
+            }
+
+            // Remove the student from the database
+            _context.Students.Remove(student);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent(); // Return a 204 No Content response
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions, such as database errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+      
     }
 }

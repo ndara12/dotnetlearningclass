@@ -5,14 +5,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Learning Class API_Dara",
+        Version = "v1",
+        Description = "CRUD Operations For Students"
+    });
+});
 
 // Configure the DbContext directly here
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-builder.Services.AddDbContext<LearningClassDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<LearningClassDbContext>(options => options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
@@ -20,7 +26,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ASDasdasda");
+    });
 }
 
 app.UseHttpsRedirection();
