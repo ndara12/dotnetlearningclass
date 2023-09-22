@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnetlearningclass", "dotnetlearningclass.csproj", "{44C17D86-C969-495E-BE55-FA843A96D0F8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestFordotnetlearningclass", "..\UnitTestFordotnetLearningClass\UnitTestFordotnetlearningclass.csproj", "{0D25D13E-825C-4157-A934-6A87957D68B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{44C17D86-C969-495E-BE55-FA843A96D0F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44C17D86-C969-495E-BE55-FA843A96D0F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44C17D86-C969-495E-BE55-FA843A96D0F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D25D13E-825C-4157-A934-6A87957D68B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D25D13E-825C-4157-A934-6A87957D68B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D25D13E-825C-4157-A934-6A87957D68B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D25D13E-825C-4157-A934-6A87957D68B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -31,5 +31,10 @@ namespace dotnetlearningclass
             // Configure your entity mappings here
             // Entity properties should match the column names by default convention
         }
+
+        //Add a Parameterless Constructor For moq!!
+        public LearningClassDbContext()
+        {
+        }
     }
 }

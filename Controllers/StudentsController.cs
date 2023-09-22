@@ -14,6 +14,13 @@ namespace dotnetlearningclass.Controllers
     {
         private readonly LearningClassDbContext _context;
 
+        private readonly IRepository<Students> _repository; // for moq
+
+        public StudentsController(IRepository<Students> repository) // for moq
+        {
+            _repository = repository;
+        }
+
         public StudentsController(LearningClassDbContext context)
         {
             _context = context;
