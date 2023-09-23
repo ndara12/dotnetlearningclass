@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using dotnetlearningclass.Entities;
 using System;
-using System.Collections.Generic; // Import this namespace for IEnumerable
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Swashbuckle.AspNetCore.Annotations;// Import this namespace for Swagger annotations
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace dotnetlearningclass.Controllers
 {
@@ -12,22 +11,15 @@ namespace dotnetlearningclass.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly LearningClassDbContext _context;
+        private readonly IRepository<Students> _repository;
 
-        private readonly IRepository<Students> _repository; // for moq
-
-        public StudentsController(IRepository<Students> repository) // for moq
+        public StudentsController(IRepository<Students> repository)
         {
             _repository = repository;
         }
 
-        public StudentsController(LearningClassDbContext context)
-        {
-            _context = context;
-        }
-
         [HttpPost]
-        [SwaggerOperation(Summary = "Create a new student", Description = "Creates a new student and adds it to the database.")]
+        [SwaggerOperation(Summary = "Create a new student", Description = "Creates a new student and adds it to the repository.")]
         public async Task<IActionResult> CreateStudent(Students student)
         {
             try
@@ -38,16 +30,15 @@ namespace dotnetlearningclass.Controllers
                     return BadRequest("Invalid student data");
                 }
 
-                // Add the student to the database
-                _context.Students.Add(student);
-                await _context.SaveChangesAsync();
+                // Add the student to the repository
+                await _repository.AddAsync(student);
 
                 // Return a 201 Created response with the newly created student
                 return CreatedAtAction(nameof(GetStudent), new { id = student.StudentId }, student);
             }
             catch (Exception ex)
             {
-                // Handle any exceptions, such as database errors
+                // Handle any exceptions, such as repository errors
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -56,7 +47,7 @@ namespace dotnetlearningclass.Controllers
         [SwaggerOperation(Summary = "Get all students", Description = "Retrieves a list of all students.")]
         public async Task<ActionResult<IEnumerable<Students>>> GetAllStudents()
         {
-            var students = await _context.Students.ToListAsync();
+            var students = await _repository.GetAllAsync();
             return Ok(students);
         }
 
@@ -64,7 +55,7 @@ namespace dotnetlearningclass.Controllers
         [SwaggerOperation(Summary = "Get a student by ID", Description = "Retrieves a student by their ID.")]
         public async Task<ActionResult<Students>> GetStudent(int id)
         {
-            var student = await _context.Students.FindAsync(id);
+            var student = await _repository.GetByIdAsync(id);
 
             if (student == null)
             {
@@ -73,6 +64,7 @@ namespace dotnetlearningclass.Controllers
 
             return student;
         }
+
         [HttpPut("{id}")]
         [SwaggerOperation(Summary = "Update a student by ID", Description = "Updates a student's information by their ID.")]
         public async Task<IActionResult> UpdateStudent(int id, Students student)
@@ -84,7 +76,7 @@ namespace dotnetlearningclass.Controllers
             }
 
             // Check if the student with the given ID exists
-            var existingStudent = await _context.Students.FindAsync(id);
+            var existingStudent = await _repository.GetByIdAsync(id);
             if (existingStudent == null)
             {
                 return NotFound("Student not found");
@@ -96,12 +88,12 @@ namespace dotnetlearningclass.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.UpdateAsync(existingStudent);
                 return NoContent(); // Return a 204 No Content response
             }
             catch (Exception ex)
             {
-                // Handle any exceptions, such as database errors
+                // Handle any exceptions, such as repository errors
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -111,27 +103,16 @@ namespace dotnetlearningclass.Controllers
         public async Task<IActionResult> DeleteStudent(int id)
         {
             // Check if the student with the given ID exists
-            var student = await _context.Students.FindAsync(id);
+            var student = await _repository.GetByIdAsync(id);
             if (student == null)
             {
                 return NotFound("Student not found");
             }
 
-            // Remove the student from the database
-            _context.Students.Remove(student);
+            // Remove the student from the repository
+            await _repository.DeleteAsync(student);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return NoContent(); // Return a 204 No Content response
-            }
-            catch (Exception ex)
-            {
-                // Handle any exceptions, such as database errors
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return NoContent(); // Return a 204 No Content response
         }
-
-      
     }
 }
