@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 namespace dotnetlearningclass
 {
     public class LearningClassDbContext : DbContext
-    {
+    {   
         private readonly IConfiguration _configuration;
 
         public LearningClassDbContext(DbContextOptions<LearningClassDbContext> options, IConfiguration configuration) : base(options)
