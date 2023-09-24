@@ -1,4 +1,5 @@
 using dotnetlearningclass;
+using dotnetlearningclass.Entities;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,9 @@ builder.Services.AddSwaggerGen(c =>
 // Configure the DbContext directly here
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 builder.Services.AddDbContext<LearningClassDbContext>(options => options.UseSqlServer(connectionString));
+
+// Add service registration for IRepository<Students>
+builder.Services.AddScoped<IRepository<Students>, Repository<Students>>();
 
 var app = builder.Build();
 

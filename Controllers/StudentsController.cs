@@ -18,6 +18,14 @@ namespace dotnetlearningclass.Controllers
             _repository = repository;
         }
 
+        [HttpGet]
+        [SwaggerOperation(Summary = "Get all students", Description = "Retrieves a list of all students.")]
+        public async Task<ActionResult<IEnumerable<Students>>> GetAllStudents()
+        {
+            var students = await _repository.GetAllAsync();
+            return Ok(students);
+        }
+
         [HttpPost]
         [SwaggerOperation(Summary = "Create a new student", Description = "Creates a new student and adds it to the repository.")]
         public async Task<IActionResult> CreateStudent(Students student)
@@ -43,13 +51,7 @@ namespace dotnetlearningclass.Controllers
             }
         }
 
-        [HttpGet]
-        [SwaggerOperation(Summary = "Get all students", Description = "Retrieves a list of all students.")]
-        public async Task<ActionResult<IEnumerable<Students>>> GetAllStudents()
-        {
-            var students = await _repository.GetAllAsync();
-            return Ok(students);
-        }
+       
 
         [HttpGet("{id}")]
         [SwaggerOperation(Summary = "Get a student by ID", Description = "Retrieves a student by their ID.")]
@@ -62,7 +64,7 @@ namespace dotnetlearningclass.Controllers
                 return NotFound();
             }
 
-            return student;
+            return Ok(student);
         }
 
         [HttpPut("{id}")]
@@ -79,7 +81,7 @@ namespace dotnetlearningclass.Controllers
             var existingStudent = await _repository.GetByIdAsync(id);
             if (existingStudent == null)
             {
-                return NotFound("Student not found");
+                return NotFound(); // Return NotFoundResult instead of NotFoundObjectResult
             }
 
             // Update the student's information
@@ -97,6 +99,7 @@ namespace dotnetlearningclass.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         [HttpDelete("{id}")]
         [SwaggerOperation(Summary = "Delete a student by ID", Description = "Deletes a student by their ID.")]
